@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\UserJob;
+
 use Illuminate\Http\Response;
 use App\Traits\ApiResponser;
 use DB;
@@ -49,9 +51,13 @@ Class UserController extends Controller {
             'username' => 'required|max:255',
             'password' => 'required|max:255',
             'status' => 'required|in:1,0',
+            'jobid' => 'required|numeric|min:1|not_in:0',
         ];
 
         $this->validate($request,$rules);
+
+        //validate if Jobid is found in the table tbluserjob
+        $userjob = UserJob::findOrFail($request->jobid);
         $user = User::create($request->all());
         return $this->successResponse($user, Response::HTTP_CREATED);
     }
@@ -84,9 +90,14 @@ Class UserController extends Controller {
             'username' => 'max:255',
             'password' => 'max:255',
             'status' => 'in:1,0',
+            'jobid' => 'required|numeric|min:1|not_in:0',
         ];
     
         $this->validate($request, $rules);
+
+        //validate if Jobid is found in the table tbluserjob
+        $userjob = UserJob::findOrFail($request->jobid);
+
         $user = User::findOrFail($id);
         
         $user->fill($request->all());
